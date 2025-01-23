@@ -7,11 +7,18 @@
     "text": "About this blog"
   },
   {
+    "objectID": "penguins_analysis.html",
+    "href": "penguins_analysis.html",
+    "title": "Penguins Analysis",
+    "section": "",
+    "text": "First we import all the relevant packages for our analysis\n\nimport pandas as pd\nimport numpy as np\nimport plotly.express as px\nfrom sklearn.linear_model import LinearRegression\nfrom plotly.io import write_html\n\nThis chunk will read in our dataset, and do some simple data cleaning, removing unwanted values and shortening some strings\n\npenguins = pd.read_csv(\"/Users/sebastian/Desktop/UCLA/Winter '25/PIC16B/hw0/palmer_penguins.csv\")\npenguins[\"Species\"] = [penguins[\"Species\"][i].split()[0] for i in range(len(penguins[\"Species\"]))]\npenguins = penguins[[\"Species\", \"Island\", \"Culmen Length (mm)\", \"Culmen Depth (mm)\", \"Flipper Length (mm)\", \"Body Mass (g)\", \"Sex\"]]\npenguins = penguins.dropna()\npenguins = penguins[penguins[\"Sex\" ] != \".\"]\n\nNow we begin our first analysis. We will examine the relationship between Culmen Length and Depth, grouped by species. In addition to plotting all the points in a scatterplot, we will add lines of best fit to each Species to demonstrate the relationship in clearer visual terms.\n\n# Create scatterplot in plotly, colored by species\nfig = px.scatter(penguins, x=\"Culmen Length (mm)\", y=\"Culmen Depth (mm)\", color=\"Species\", title=\"Culmen Length vs Culmen Depth\")\n\n# Define function that takes in a dataframe and species, and returns the coefficients of the line of best fit\ndef regression_by_species(data, species):\n    '''\n    data: pandas DataFrame\n    species: str\n    This function takes in a pandas DataFrame and a species, and returns the coefficients of the line of best fit for the Culmen Length vs Culmen Depth for that species.\n    returns: tuple\n    '''\n    data = data[data[\"Species\"] == species]\n    X = data[\"Culmen Length (mm)\"].values.reshape(-1, 1)\n    y = data[\"Culmen Depth (mm)\"].values.reshape(-1,1)\n    LR = LinearRegression()\n    LR.fit(X,y)\n    return LR.coef_, LR.intercept_\n\n# Now define x indices and colors for the line of best fit for each species\nx_range = np.linspace(penguins[\"Culmen Length (mm)\"].min(), penguins[\"Culmen Length (mm)\"].max(), 100)\ncolors = px.colors.qualitative.Plotly\n\n# Finally, loop through each species and add the line of best fit to the plot\nfor i, species in enumerate(penguins[\"Species\"].unique()):\n    coef, intercept = regression_by_species(penguins, species)\n    y_range = coef[0][0] * x_range + intercept[0]\n    fig.add_trace(px.line(x=x_range, y=y_range).data[0].update(line=dict(color=colors[i])), row=None, col=None)\n\n# Show our figure\nfig.show()\nwrite_html(fig, 'best_fit_scatter.html')\n\n\n\nUnable to display output for mime type(s): application/vnd.plotly.v1+json\n\n\nFor our second analysis, we will examine the two remaining quantitative variables, body mass and flipper length, in another scatterplot. We will add marginal plots to show the univariate distributions of each variable as well.\n\n# Create scatterplot in plotly, colored by species, with marginal violin plots\nfig2 = px.scatter(penguins, x=\"Flipper Length (mm)\", y=\"Body Mass (g)\", color = \"Species\", marginal_x=\"violin\", marginal_y=\"violin\", title=\"Flipper Length vs Body Mass\")\nfig2.show()\nwrite_html(fig2, 'marginal_scatter.html')\n\nUnable to display output for mime type(s): application/vnd.plotly.v1+json\n\n\nmarginal_scatter.html"
+  },
+  {
     "objectID": "posts/welcome/index.html",
     "href": "posts/welcome/index.html",
     "title": "Welcome To My Blog",
     "section": "",
-    "text": "This is the first post in a Quarto blog. Welcome!\n\nSince this post doesn’t specify an explicit image, the first image in the post will be used in the listing page of posts."
+    "text": "This is a sample blog pos"
   },
   {
     "objectID": "posts/post-with-code/index.html",
@@ -21,10 +28,38 @@
     "text": "This is a post with executable code."
   },
   {
+    "objectID": "posts/hw0-post/penguins_analysis.html",
+    "href": "posts/hw0-post/penguins_analysis.html",
+    "title": "Penguins Dataset Analysis",
+    "section": "",
+    "text": "In this blog post, we will analyze the famous Palmer Archipelago (Antarctica) penguin dataset. This dataset contains measurements for three different species of penguins: Adelie, Chinstrap, and Gentoo. The goal of this analysis is to explore the data and uncover interesting patterns and insights."
+  },
+  {
+    "objectID": "posts/hw0-post/penguins_analysis.html#data-import",
+    "href": "posts/hw0-post/penguins_analysis.html#data-import",
+    "title": "Penguins Dataset Analysis",
+    "section": "Data Import",
+    "text": "Data Import\nFirst, import all relevant packages, and do some basic data cleaning\n\nimport pandas as pd\nimport numpy as np\nimport plotly.express as px\nfrom sklearn.linear_model import LinearRegression\nfrom plotly.io import write_html\n\n\n# Load the dataset\npenguins = pd.read_csv(\"/Users/sebastian/Desktop/UCLA/Winter '25/PIC16B/hw0/palmer_penguins.csv\")\n\n# Shorten species names\npenguins[\"Species\"] = [penguins[\"Species\"][i].split()[0] for i in range(len(penguins[\"Species\"]))]\n\n# Select only relevant columns\npenguins = penguins[[\"Species\", \"Island\", \"Culmen Length (mm)\", \"Culmen Depth (mm)\", \"Flipper Length (mm)\", \"Body Mass (g)\", \"Sex\"]]\n\n# Remove unwanted values\npenguins = penguins.dropna()\npenguins = penguins[penguins[\"Sex\" ] != \".\"]"
+  },
+  {
+    "objectID": "posts/hw0-post/penguins_analysis.html#plot-1",
+    "href": "posts/hw0-post/penguins_analysis.html#plot-1",
+    "title": "Penguins Dataset Analysis",
+    "section": "Plot 1",
+    "text": "Plot 1\nNow we begin our first analysis. We will examine the relationship between Culmen Length and Depth, grouped by species. In addition to plotting all the points in a scatterplot, we will add lines of best fit to each Species to demonstrate the relationship in clearer visual terms.\n\n# Create scatterplot in plotly, colored by species\nfig = px.scatter(penguins, x=\"Culmen Length (mm)\", y=\"Culmen Depth (mm)\", color=\"Species\", title=\"Culmen Length vs Culmen Depth\")\n\n# Define function that takes in a dataframe and species, and returns the coefficients of the line of best fit\ndef regression_by_species(data, species):\n    '''\n    data: pandas DataFrame\n    species: str\n    This function takes in a pandas DataFrame and a species, and returns the coefficients of the line of best fit for the Culmen Length vs Culmen Depth for that species.\n    returns: tuple\n    '''\n    data = data[data[\"Species\"] == species]\n    X = data[\"Culmen Length (mm)\"].values.reshape(-1, 1)\n    y = data[\"Culmen Depth (mm)\"].values.reshape(-1,1)\n    LR = LinearRegression()\n    LR.fit(X,y)\n    return LR.coef_, LR.intercept_\n\n# Now define x indices and colors for the line of best fit for each species\nx_range = np.linspace(penguins[\"Culmen Length (mm)\"].min(), penguins[\"Culmen Length (mm)\"].max(), 100)\ncolors = px.colors.qualitative.Plotly\n\n# Finally, loop through each species and add the line of best fit to the plot\nfor i, species in enumerate(penguins[\"Species\"].unique()):\n    coef, intercept = regression_by_species(penguins, species)\n    y_range = coef[0][0] * x_range + intercept[0]\n    fig.add_trace(px.line(x=x_range, y=y_range).data[0].update(line=dict(color=colors[i])), row=None, col=None)\n\n# Save our figure\nwrite_html(fig, 'best_fit_scatter.html')"
+  },
+  {
+    "objectID": "posts/hw0-post/penguins_analysis.html#plot-2",
+    "href": "posts/hw0-post/penguins_analysis.html#plot-2",
+    "title": "Penguins Dataset Analysis",
+    "section": "Plot 2",
+    "text": "Plot 2\nFor our second analysis, we will examine the two remaining quantitative variables, body mass and flipper length, in another scatterplot. We will add marginal plots to show the univariate distributions of each variable as well.\n\n# Create scatterplot in plotly, colored by species, with marginal violin plots\nfig2 = px.scatter(penguins, x=\"Flipper Length (mm)\", y=\"Body Mass (g)\", color = \"Species\", marginal_x=\"violin\", marginal_y=\"violin\", title=\"Flipper Length vs Body Mass\")\nwrite_html(fig2, 'marginal_scatter.html')"
+  },
+  {
     "objectID": "index.html",
     "href": "index.html",
     "title": "myblog",
     "section": "",
-    "text": "Hello this is the index\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nPost With Code\n\n\n\n\n\n\nnews\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\nJan 22, 2025\n\n\nHarlow Malloc\n\n\n\n\n\n\n\n\n\n\n\n\nWelcome To My Blog\n\n\n\n\n\n\nnews\n\n\n\n\n\n\n\n\n\nJan 19, 2025\n\n\nTristan O’Malley\n\n\n\n\n\n\nNo matching items"
+    "text": "Hello this is the index\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nPost With Code\n\n\n\n\n\n\nnews\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\nJan 22, 2025\n\n\nHarlow Malloc\n\n\n\n\n\n\n\n\n\n\n\n\nPenguins Dataset Analysis\n\n\n\n\n\n\nData Analysis\n\n\nPenguins\n\n\n\n\n\n\n\n\n\nJan 22, 2025\n\n\nSebastian\n\n\n\n\n\n\n\n\n\n\n\n\nWelcome To My Blog\n\n\n\n\n\n\nnews\n\n\n\n\n\n\n\n\n\nJan 19, 2025\n\n\nTristan O’Malley\n\n\n\n\n\n\nNo matching items"
   }
 ]
