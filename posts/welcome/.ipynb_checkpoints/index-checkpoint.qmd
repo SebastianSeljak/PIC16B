@@ -1,0 +1,8 @@
+---
+title: "Welcome To My Blog"
+author: "Tristan O'Malley"
+date: "2025-01-19"
+categories: [news]
+---
+
+This is a sample blog pos
